@@ -16,7 +16,7 @@ gcloud iam service-accounts list
 # airflow-darshil-sa@airflow-darshil.iam.gserviceaccount.com
 
 # create key
-gcloud iam service-accounts keys create airflow-darshil-sa.json --iam-account='airflow-darshil-sa@airflow-darshil.iam.gserviceaccount.com' --key-file-type=json > key.json
+gcloud iam service-accounts keys create airflow-darshil-sa.json --iam-account='airflow-darshil-sa@airflow-darshil.iam.gserviceaccount.com' --key-file-type=json
 
 # grant access to service account
 gcloud projects add-iam-policy-binding airflow-darshil --member='serviceAccount:airflow-darshil-sa@airflow-darshil.iam.gserviceaccount.com' --role='roles/owner' --project=airflow-darshil

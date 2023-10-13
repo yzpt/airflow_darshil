@@ -5,18 +5,19 @@ from google.cloud import storage
 from google.cloud import bigquery
 import os
 import logging
+import requests
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Set up environment variables
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'key.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "airflow-darshil-sa.json"
 
-# Set up GCP clients
-storage_client = storage.Client()
-bq_client = bigquery.Client()
+# Read in the data from the API
+logger.info('Reading data from API')
+url = 'https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=vlille-realtime&rows=300'
+response = requests.get(url)
+data = response.json()
 
-# Set up GCP bucket and blob
-bucket = storage_client.get_bucket('airflow-darhsil-bucket')
-
+print(data)
