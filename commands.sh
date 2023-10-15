@@ -36,25 +36,33 @@ gcloud services enable compute.googleapis.com
 gcloud projects add-iam-policy-binding airflow-darshil --member='serviceAccount:airflow-darshil-sa@airflow-darshil.iam.gserviceaccount.com' --role='roles/compute.admin' --project=airflow-darshil
 
 
-# compute engine instance-4 created on GUI
-gcloud compute instances describe instance-4 --zone=us-west4-b --project=airflow-darshil
-# natIP: 34.16.148.140
+# create vm
+$PROJECT_ID="airflow-darshil"
+$ZONE="europe-west1-b"
+gcloud compute instances create my-vm2 --project=$PROJECT_ID --zone=$ZONE --machine-type=e2-standard-8 --network-tier=PREMIUM --stack-type=IPV4_ONLY --subnet=default --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=airflow-darshil-sa@airflow-darshil.iam.gserviceaccount.com --boot-disk-auto-delete --boot-disk-type=pd-standard --boot-disk-device-name=instance-1 --image=projects/debian-cloud/global/images/debian-11-bullseye-v20231010 --image-project=rw --boot-disk-size=10 --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --labels=goog-ec-src=vm_add-gcloud --reservation-affinity=any 
 
-# ssh into vm
-gcloud compute ssh instance-4 --zone=us-west4-b --project=airflow-darshil
+# add tags
+gcloud compute instances add-tags my-vm2 --tags airflow-webserver --zone=$ZONE --project=$PROJECT_ID
 
-# -- ssh:
+# allow connexion on airflow port 8080
+gcloud compute firewall-rules create airflow-webserver --allow tcp:8080 --target-tags airflow-webserver --project=$PROJECT_ID --description="Allow http traffic on port 8080" --direction=INGRESS --priority=1000 --network=default --source-ranges='0.0.0.0/0' --target-tags=airflow-webserver 
+
+# ssh
+gcloud compute ssh my-vm2 --zone=$ZONE --project=$PROJECT_ID
+# vm commands:
 sudo apt-get update
 sudo apt-get install python3-pip -y
 sudo pip install apache-airflow
 sudo pip install pandas
 sudo pip install google-cloud-storage
-
 airflow standalone
-# admin / 6R4sdN5wRDDZvTF7
+# admin / HPhrXP8HCuuYCNUp
 
-# chrome > 34.16.148.140:8080
-# ===============           ok !       =================
+# infos
+gcloud compute instances describe my-vm2 --zone=$ZONE --project=$PROJECT_ID
+# natIP: 35.205.225.201
 
-# delete vm
-gcloud compute instances delete instance-4 --zone=us-west4-b --project=airflow-darshil -q
+# chrome 
+# url: 35.205.225.201:8080
+# admin / HPhrXP8HCuuYCNUp
+
